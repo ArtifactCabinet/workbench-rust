@@ -1,3 +1,5 @@
-fn main() {
-    println!("Hello, world!");
+mod p00_basis;
+
+fn main(){
+    p00_basis::main();
 }
