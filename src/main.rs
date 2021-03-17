@@ -1,5 +1,5 @@
-mod p00_basis;
+mod p01_traits;
 
 fn main(){
-    p00_basis::main();
+    p01_traits::main();
 }
