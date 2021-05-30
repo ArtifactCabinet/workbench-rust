@@ -1,0 +1,8 @@
+[package]
+name = "Simple-Tic-Tac-Toe"
+version = "0.1.0"
+authors = ["shenleban tongying <shenlebantongying@gmail.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
