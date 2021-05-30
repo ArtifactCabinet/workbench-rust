@@ -1,2 +1,3 @@
-# Laugh in rust
-![rust_meme](https://i.redd.it/7bbj3cznnks51.png)
+# Type system
+
+Ownership (aka _affine_ or _substructural_ type system)
