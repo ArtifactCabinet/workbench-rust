@@ -1,0 +1,15 @@
+[package]
+name = "linked_list"
+version = "0.1.0"
+authors = ["shenleban tongying <shenlebantongying@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[lib]
+name = "linked_list"
+path = "src/lib.rs"
+test = true
+bench = true
