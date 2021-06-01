@@ -1,6 +1,25 @@
-use std::{io, process::exit};
-
+use std::fmt::{self, Display, Formatter};
+use std::io;
+use std::process::exit;
 // TODO: use enum rather than num
+
+#[derive(Copy, Clone, PartialEq, Eq)]
+//       ^     ^ Rust quirk
+enum PosType {
+    P1,
+    P2,
+    None,
+}
+
+impl Display for PosType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            PosType::P1 => write!(f, "Player 1"),
+            PosType::P2 => write!(f, "Player 2"),
+            _ => todo!(), // This line should not be reached
+        }
+    }
+}
 
 fn main() -> io::Result<()> {
     // Board without anything -> 0
@@ -13,8 +32,8 @@ fn main() -> io::Result<()> {
 
     // user input row:col
 
-    let mut switch = 1;
-    let mut board = [[0u8; 3]; 3];
+    let mut switch = PosType::P1;
+    let mut board = [[PosType::None; 3]; 3];
     println!("=[Game board]>");
     print_board(board);
 
@@ -41,40 +60,37 @@ fn main() -> io::Result<()> {
                 col = col - 1;
 
                 // Modification of the board;
-                println!("=[Player {}]> take {} {}", switch, row + 1, col + 1);
+                println!("= {} > take {} {}", switch, row + 1, col + 1);
 
-                if board[row as usize][col as usize] != 0 {
+                if board[row as usize][col as usize] != PosType::None {
                     println!("Please don't take other player's pos");
                     continue;
                 }
-                
+
                 board[row as usize][col as usize] = switch;
                 print_board(board);
 
                 let result = judge(board);
                 match result {
-                    0 => {}
-                    1 => {
-                        println!("=[Player 1] win");
+                    PosType::None => {}
+                    PosType::P1 => {
+                        println!("==[Player 1] win");
                         exit(0)
                     }
-                    2 => {
+                    PosType::P2 => {
                         println!("=[Player 2] win");
                         exit(0)
                     }
-                    _ => {}
                 }
 
                 switch = match switch {
-                    1 => 2,
-                    2 => 1,
-                    _ => 0,
+                    PosType::P1 => PosType::P2,
+                    PosType::P2 => PosType::P1,
+                    PosType::None => {
+                        println!("Switch value invalid");
+                        continue;
+                    }
                 };
-
-                if switch == 0 {
-                    println!("Switch value invalid");
-                    continue;
-                }
             }
         } else {
             println!("Please input numbers!");
@@ -83,56 +99,79 @@ fn main() -> io::Result<()> {
     } // main loop
 }
 
-fn print_board(board: [[u8; 3]; 3]) {
+fn print_board(board: [[PosType; 3]; 3]) {
     for row in 0..3 {
         for col in 0..3 {
-            print!("{} ", board[row][col]);
+            match board[row][col] {
+                PosType::None => {
+                    print!("{} ", 0)
+                }
+                PosType::P1 => {
+                    print!("{} ", 1)
+                }
+                PosType::P2 => {
+                    print!("{} ", 2)
+                }
+            }
         }
         println!();
     }
 }
 
-fn judge(board: [[u8; 3]; 3]) -> u8 {
-
+// TODO: There should be a better way to handle the thing below
+// NOTE: enum type is werid
+fn judge(board: [[PosType; 3]; 3]) -> PosType {
     for row in 0..3 {
-        if (board[row][0] == board[row][1]) && (board[row][1] == board[row][2]) {
-            match board[row][0] {
-                0 => {continue;}
-                1 => {return 1;}
-                2 => {return 2;}
-                _ => {}
+        match (board[row][0], board[row][1], board[row][2]) {
+            (PosType::None, PosType::None, PosType::None) => {
+                continue;
             }
+            (PosType::P1, PosType::P1, PosType::P1) => {
+                return PosType::P1;
+            }
+            (PosType::P2, PosType::P2, PosType::P2) => {
+                return PosType::P2;
+            }
+            _ => {}
         }
     }
 
     for col in 0..3 {
-        if (board[0][col] == board[1][col]) && (board[1][col] == board[2][col]) {
-            match board[0][col] {
-                0 => {continue;}
-                1 => {return 1;}
-                2 => {return 2;}
-                _ => {}
+        match (board[0][col], board[1][col], board[2][col]) {
+            (PosType::None, PosType::None, PosType::None) => {
+                continue;
             }
+            (PosType::P1, PosType::P1, PosType::P1) => {
+                return PosType::P1;
+            }
+            (PosType::P2, PosType::P2, PosType::P2) => {
+                return PosType::P2;
+            }
+            _ => {}
         }
     }
 
-    if (board[0][0] == board[1][1]) && (board[1][1] == board[2][2]) {
-        match board[1][1] {
-            0 => {},
-            1 => {return 1;},
-            2 => {return 2;},
-            _ => {},
+    match (board[0][0], board[1][1], board[2][2]) {
+        (PosType::None, PosType::None, PosType::None) => {}
+        (PosType::P1, PosType::P1, PosType::P1) => {
+            return PosType::P1;
         }
+        (PosType::P2, PosType::P2, PosType::P2) => {
+            return PosType::P2;
+        }
+        _ => {}
     }
 
-    if (board[0][2] == board[1][1]) && (board[1][1] == board[2][0]) {
-        match board[1][1] {
-            0 => {},
-            1 => {return 1;},
-            2 => {return 2;},
-            _ => {},
+    match (board[0][2], board[1][1], board[2][0]) {
+        (PosType::None, PosType::None, PosType::None) => {}
+        (PosType::P1, PosType::P1, PosType::P1) => {
+            return PosType::P1;
         }
+        (PosType::P2, PosType::P2, PosType::P2) => {
+            return PosType::P2;
+        }
+        _ => {}
     }
 
-    return 0;
+    return PosType::None;
 }
