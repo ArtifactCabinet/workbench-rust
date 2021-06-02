@@ -1,0 +1,16 @@
+[package]
+name = "rust-workbench"
+version = "0.1.0"
+authors = ["slbtty<shenlebantongying@gmail.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[[bin]]
+name="command"
+path= "command_Printer.rs"
+
+[[bin]]
+name="command_fn"
+path= "command_fn_pointer.rs"
